@@ -1,0 +1,48 @@
+<html>
+<head>
+    <title>Shifts</title>
+</head>
+<body>
+{% load scheduler_extras %}
+<h1> {{ employee.name }} </h1>
+{% if status_message %}<p><strong>{{ status_message }}</strong></p>{% endif %}
+{% if employee.shift_set.all %}
+    <div>
+        <div>
+            <h2><b>Shift List</b></h2>
+            <ul>
+                {% for shift in employee.shift_set.all %}
+                    <li>{{ shift.date }}: {{ shift.start_time }}-{{ shift.end_time }}<br><b>Length:</b> {{ shift.end_time|subtractTimes:shift.start_time }} </li>
+                    {% if shift.position %}<b>Position:</b> {{ shift.position.name }}<br>{% endif %}<b>Status:</b> {{ shift.get_status_display }} {% if shift.reason %}<br> <b>Reason:</b> {{ shift.reason }} 
+                    {% endif %}
+                    <br><a href="{% url 'scheduler:showShift' employee.id shift.id %}">Edit</a>
+                {% endfor %}
+            </ul>
+        </div>
+{% endif %}
+    <div>
+        <h2><b>Add Shift</b></h2>
+        <form action="{% url 'scheduler:addShift' employee.id %}" method="post">
+        {% csrf_token %}
+            <pre>
+            Date:       <input type="date" name="date"><br>
+            Start Time: <input type="time" name = "start_time"><br>
+            End Time:   <input type="time" name = "end_time"><br>
+            Status:     <select name="status">
+                            <option value="Z">Not Here Yet</option>
+                            <option value="H">Present</option>
+                            <option value="C">Call Off</option>
+                            <option value="N">No Call No Show</option>
+                            <option value="L">Late</option>
+                            <option value="E">Left Early</option>
+                            <option value="M">Medical</option>
+                        </select><br>
+            Reason:     <input type="text" name = "reason" max = "64"><br>
+            <input type="submit" value="Add Shift">
+            </pre>
+        </form>
+    </div>
+</div>
+<a href="{% url 'scheduler:index' %}">Back</a>
+</body>
+</html>

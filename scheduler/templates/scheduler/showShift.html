@@ -1,0 +1,43 @@
+<html>
+<head>
+    <title>Edit Shift</title>
+</head>
+<body>
+{% load scheduler_extras %}
+<h1>{{ employee.name }}</h1> <h1>{{ shift.date }}</h1><br>
+<h2><b>Edit Shift</b></h2>
+    <form action="{% url 'scheduler:editShift' employee.id shift.id %}" method="post">
+    {% csrf_token %}
+        <pre>
+        Date:   <input type="date" name="date" value="{{ shift.date|date:'Y-m-d' }}"><br>
+        Start Time: <input type="time" name = "start_time" value="{{ shift.start_time|time:'H:i' }}"><br>
+        End Time:   <input type="time" name = "end_time" value="{{ shift.end_time|time:'H:i' }}"><br>
+        Status: <select name="status">
+            <option value="Z">Not Here Yet</option>
+            <option value="H">Present</option>
+            <option value="C">Call Off</option>
+            <option value="N">No Call No Show</option>
+            <option value="L">Late</option>
+            <option value="E">Left Early</option>
+            <option value="M">Medical</option>
+        </select><br>
+        Reason: <input type="text" name = "reason" max = "64" value="{{ shift.reason }}"><br>
+        
+        <input type="submit" value="Edit Shift">
+        </pre>
+    </form>
+
+    {% if shift.break_set.all %}
+    <div>
+        <h2><b>Break List</b></h2>
+        <ul>
+            {% for break in shift.break_set.all %}
+                <li>{{ break.break_time }}
+                <br><b>Length:</b> {{ break.return_time|subtractTimes:break.break_time }} </li>
+                <b>Is Lunch:</b> {{ break.is_lunch }}
+            {% endfor %}
+        </ul>
+{% endif %}
+<a href="{% url 'scheduler:shift' employee.id %}">Back</a>
+</body>
+</html>

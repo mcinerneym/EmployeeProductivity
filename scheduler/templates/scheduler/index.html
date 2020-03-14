@@ -1,0 +1,40 @@
+<html>
+{% load static%}
+    <head>
+        <title>Employees</title>
+        <link rel='stylesheet' type='text/css' href="{% static 'scheduler/style.css' %}"
+    </head>
+    <body>
+        <div id='container'>
+            {% if employees %}
+            <div id="elist">
+                <h2>Employees</h2>
+                {% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
+                    <ul>
+                    {% for employee in employees %}
+                        <li><a href="{% url 'scheduler:shift' employee.id %}">{{ employee.name }}</a></li>
+                    {% endfor %}
+                    </ul>
+                    </div>
+                {% else %}
+                    <p>No employees are available.</p>
+            
+            {% endif %}
+            <div id="shiftlookup">
+                <h2>Look up Daily Shift Notes</h2>
+                <form action="{% url 'scheduler:dayStatus' %}" method="get">
+                    Date: <input type="date" name="date">
+                    <input type="submit" value="Check Date">
+                </form>
+            </div>
+            <div id="adde">
+                <h2>Add Employee</h2>
+                <form action="{% url 'scheduler:addEmployee' %}" method="post">
+                    {% csrf_token %}
+                    Name: <input type="text" name="name" max="32">
+                    <input  type="submit" value="Add Employee">
+                </form>
+            </div>
+        </div>
+    </body>
+</html>
